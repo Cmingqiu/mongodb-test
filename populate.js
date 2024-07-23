@@ -1,39 +1,41 @@
-const crypto = require('crypto');
-
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { UserSchema } = require('./schemas/author');
+const { ArticleSchema } = require('./schemas/article');
 
-// schemas
-// 作者
-const UserSchema = new Schema({
-  name: String,
-  password: { type: String, required: true }
-});
-
-// 文章
-const ArticleSchema = new mongoose.Schema({
-  title: String,
-  author: { type: Schema.ObjectId, ref: 'User' }
-});
-
-const conn = mongoose.connect(
-  'mongodb://localhost:27017/test' /*  {
+// 1.连接数据库
+mongoose
+  .connect(
+    'mongodb://localhost:27017/school' /*  {
   useNewUrlParser: true,
   useUnifiedTopology: true
 } */
-);
-conn.on('error', err => console.error('数据库连接失败', err));
-conn.on('open', () => console.log('数据库连接成功'));
+  )
+  .then(async () => {
+    console.log('数据库连接成功');
 
-const User = mongoose.model('User', UserSchema);
-const Article = mongoose.model('Article', ArticleSchema);
+    // 2.关联schema与模型（相当于一个集合/表）
+    const User = mongoose.model('User', UserSchema);
+    // const Article = mongoose.model('Article', ArticleSchema);
 
-(async () => {
-  const user = await User.create({ name: 'John', password: '1111' });
-  await Article.create({ title: 'Hello', author: user.id });
-})();
+    // const allUser = await User.find();
+    const user = await User.insertMany(crateUsers(5));
 
-// utils 加密密码
-function cryptoPwd(pwd) {
-  return crypto.createHash('md5').update(pwd).digest('base64');
+    console.log('====> ', user);
+    // Article.create({ title: '文章1', author: allUser[0]._id });
+
+    // const user = await Article.find({ title: /文章/ }).populate('author');
+  })
+  .catch(err => {
+    console.error('数据库连接出错', err);
+    process.exit(1); // 终止程序
+  });
+
+function crateUsers(num) {
+  const users = [];
+  let i = 0;
+  while (num--) {
+    i++;
+    users.push({ name: 'user_' + i, age: i, password: '' + i });
+  }
+  return users;
 }
