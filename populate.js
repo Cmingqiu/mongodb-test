@@ -18,8 +18,10 @@ mongoose
     // const Article = mongoose.model('Article', ArticleSchema);
 
     // const allUser = await User.find();
-    const user = await User.insertMany(crateUsers(5));
+    const user = await User.insertMany(crateUsers(5), { xx: 'xx' });
 
+    // const user = new User({ name: 'user_1', age: 1, password: '1' });
+    // user.save();
     console.log('====> ', user);
     // Article.create({ title: '文章1', author: allUser[0]._id });
 

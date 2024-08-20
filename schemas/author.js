@@ -14,11 +14,18 @@ const UserSchema = new Schema({
  * 密码加密
  * @example User.insertMany([],{...options})
  */
+
 UserSchema.pre('insertMany', function (next, options) {
+  console.log('this.password： ', Object.keys(this.prototype), options);
+  // console.log('---> ', this.base, this.Query, this.collection);
+  // this.schema.password = cryptoPwd(this.schema.password);
+  next();
+});
+/* UserSchema.pre('insertMany', function (next, options) {
   console.log('this.password： ', this.get('password'));
   this.set('password', cryptoPwd(this.get('password')));
   next();
-});
+}); */
 
 // utils 加密密码
 function cryptoPwd(pwd) {
